@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    enabled: true
+    database-platform: org.hibernate.dialect.Oracle9iDialect
+  datasource:
+    shard1:
+      url: jdbc:oracle:thin:@db-shard-1:1521:orcl
+      username: shard1_user
+      password: shard1_pass
+      driver-class-name: oracle.jdbc.OracleDriver
+    shard2:
+      url: jdbc:oracle:thin:@db-shard-2:1521:orcl
+      username: shard2_user
+      password: shard2_pass
+      driver-class-name: oracle.jdbc.OracleDriver
+    shard3:
+      url: jdbc:oracle:thin:@db-shard-3:1521:orcl
+      username: shard3_user
+      password: shard3_pass
+      driver-class-name: oracle.jdbc.OracleDriver
+    shard4:
+      url: jdbc:oracle:thin:@db-shard-4:1521:orcl
+      username: shard4_user
+      password: shard4_pass
+      driver-class-name: oracle.jdbc.OracleDriver

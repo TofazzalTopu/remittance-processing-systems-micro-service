@@ -15,6 +15,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Configuration
 public class KafkaProducerConfig {
@@ -31,8 +32,23 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_CONFIG);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+        // Idempotence
+        configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        configProps.put(ProducerConfig.ACKS_CONFIG, "all");
+        configProps.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
+        configProps.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+
+        // Transactional producer (REQUIRED if using transactions) //do not use unless you handle transactions manually
+        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "email-service-tx-" + UUID.randomUUID());
+
+        DefaultKafkaProducerFactory<String, EmailData> factory =
+                new DefaultKafkaProducerFactory<>(configProps);
+
+        factory.setTransactionIdPrefix("email-service-tx-");
+
         Thread.currentThread().setContextClassLoader(original);
-        return new DefaultKafkaProducerFactory<>(configProps);
+        return factory;
     }
 
     @Bean

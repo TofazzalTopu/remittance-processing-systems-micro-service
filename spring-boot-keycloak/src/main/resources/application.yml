@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/master
+          jwk-set-uri: http://localhost:8080/realms/master/protocol/openid-connect/certs
+
+
+keycloak:
+  auth-server-url: http://localhost:8080
+  grant_type: password
+  realm: master
+  resource: myclient
+  public-client: true
+  bearer-only: true
+  use-resource-role-mappings: true
+
+  admin:
+    client-id: myclient
+    client-secret: r42QlOyuIJTZeGKYVKjj54KDjBlMkZzh
+    username: admin
+    password: admin
