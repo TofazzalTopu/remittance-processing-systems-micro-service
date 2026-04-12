@@ -7,18 +7,21 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="division" />
-        <module name="instant-cash-api" />
         <module name="authentication-server" />
-        <module name="api-gateway-service" />
         <module name="eureka" />
-        <module name="kafka" />
         <module name="accounts-service" />
-        <module name="transaction-service" />
         <module name="user-service" />
-        <module name="micro-service" />
         <module name="redis" />
         <module name="bank-service" />
+        <module name="spring-keycloak-service" />
+        <module name="division" />
+        <module name="instant-cash-api" />
+        <module name="api-gateway-service" />
+        <module name="kafka" />
+        <module name="spring-boot-sharing-read-write-replica" />
+        <module name="transaction-service" />
+        <module name="micro-service" />
+        <module name="department" />
       </profile>
       <profile name="Annotation profile for common-dto" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -45,6 +48,7 @@
       <module name="auth-server" options="-parameters" />
       <module name="authentication-server" options="-parameters" />
       <module name="bank-service" options="-parameters" />
+      <module name="common-dto" options="-parameters" />
       <module name="department" options="-parameters" />
       <module name="department-service" options="-parameters" />
       <module name="division" options="-parameters" />
@@ -54,6 +58,8 @@
       <module name="kafka" options="-parameters" />
       <module name="micro-service" options="-parameters" />
       <module name="redis" options="-parameters" />
+      <module name="spring-boot-sharing-read-write-replica" options="-parameters" />
+      <module name="spring-keycloak-service" options="-parameters" />
       <module name="transaction-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>

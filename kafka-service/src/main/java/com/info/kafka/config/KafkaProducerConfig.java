@@ -15,39 +15,43 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Configuration
 public class KafkaProducerConfig {
 
-    @Value("${spring.kafka.bootstrap-servers:localhost:9092}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String BOOTSTRAP_SERVERS_CONFIG;
 
     @Bean
     public ProducerFactory<String, EmailData> emailDataProducerFactory() {
-        ClassLoader original = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(null);
 
-        Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_CONFIG);
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        Map<String, Object> config = new HashMap<>();
 
-        // Idempotence
-        configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-        configProps.put(ProducerConfig.ACKS_CONFIG, "all");
-        configProps.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
-        configProps.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+        // Core
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS_CONFIG);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-        // Transactional producer (REQUIRED if using transactions) //do not use unless you handle transactions manually
-        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "email-service-tx-" + UUID.randomUUID());
+        // Reliability (Exactly Once)
+        config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        config.put(ProducerConfig.ACKS_CONFIG, "all");
+        config.put(ProducerConfig.RETRIES_CONFIG, Integer.MAX_VALUE);
+        config.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
+
+        //  Performance
+        config.put(ProducerConfig.BATCH_SIZE_CONFIG, 65536);
+        config.put(ProducerConfig.LINGER_MS_CONFIG, 20);
+        config.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
+
+        // Transactions (ONLY if needed)
+        // Stable ID (important!)
+        config.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "email-service-tx");
 
         DefaultKafkaProducerFactory<String, EmailData> factory =
-                new DefaultKafkaProducerFactory<>(configProps);
+                new DefaultKafkaProducerFactory<>(config);
 
         factory.setTransactionIdPrefix("email-service-tx-");
 
-        Thread.currentThread().setContextClassLoader(original);
         return factory;
     }
 

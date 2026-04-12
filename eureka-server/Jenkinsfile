@@ -19,13 +19,21 @@ pipeline {
                 }
             }
         }
+
         stage("Push Docker Image To Docker Hub") {
-            steps{
+            steps {
                 script {
-                    withCredentials([string(credentialsId: 'my-docker-hub-pwd', variable: 'my-docker-hub-pwd')]) {
-                    sh 'docker login -u tofazzal -p ${my-docker-hub-pwd}'
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker-hub-cred',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PWD'
+                    )]) {
+
+                        sh '''
+                        echo "$DOCKER_PWD" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${DOCKER_IMAGE}
+                        '''
                     }
-                    sh 'docker push tofazzal/eureka-server'
                 }
             }
         }

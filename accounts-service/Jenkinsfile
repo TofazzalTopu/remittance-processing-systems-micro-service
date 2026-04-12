@@ -3,8 +3,9 @@ pipeline {
     tools {
         maven 'maven_3_5_0'
     }
+
     environment {
-        DOCKER_IMAGE = "tofazzal/spring-boot-sharding-replication:latest"
+        DOCKER_IMAGE = "tofazzal/account-service:latest"
     }
 
     stages {
@@ -12,7 +13,7 @@ pipeline {
             steps {
                 checkout scmGit(
                     branches: [[name: '*/master']], extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/TofazzalTopu/spring-boot-sharding-replication']]
+                    userRemoteConfigs: [[url: 'https://github.com/TofazzalTopu/account-service']]
                 )
             }
         }
@@ -30,6 +31,7 @@ pipeline {
                 }
             }
         }
+
 
         stage("Push Docker Image To Docker Hub") {
             steps {
@@ -49,6 +51,7 @@ pipeline {
             }
         }
 
+
         stage('Deploy to Kubernetes') {
             steps {
                 script {
@@ -62,10 +65,10 @@ pipeline {
                         kubectl apply -f deployment.yml
 
                         # Ensure latest image is pulled (important for :latest tag)
-                        kubectl rollout restart deployment spring-boot-sharding-replication
+                        kubectl rollout restart deployment account-service
 
                         # Verify rollout
-                        kubectl rollout status deployment spring-boot-sharding-replication
+                        kubectl rollout status deployment account-service
                         '''
                     }
                 }

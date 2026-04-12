@@ -3,29 +3,70 @@ pipeline {
     tools {
         maven 'maven_3_5_0'
     }
-
+    environment {
+        DOCKER_IMAGE = "tofazzal/user-service:latest"
+    }
     stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scmGit(
+                    branches: [[name: '*/master']],
+                    userRemoteConfigs: [[url: 'https://github.com/TofazzalTopu/user-service']]
+                )
+            }
+        }
+
         stage('Build Maven') {
             steps {
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/TofazzalTopu/user-service']])
-                sh 'mvn clean install'
+                sh 'mvn clean install -DskipTests'
             }
         }
 
         stage ("Build Docker Image"){
             steps{
                 script {
-                    sh 'docker build -t tofazzal/user-service .'
+                    sh 'docker build -t ${DOCKER_IMAGE} .'
                 }
             }
         }
+
         stage("Push Docker Image To Docker Hub") {
-            steps{
+            steps {
                 script {
-                    withCredentials([string(credentialsId: 'my-docker-hub-pwd', variable: 'my-docker-hub-pwd')]) {
-                    sh 'docker login -u tofazzal -p ${my-docker-hub-pwd}'
+                    withCredentials([usernamePassword(
+                        credentialsId: 'docker-hub-cred',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PWD'
+                    )]) {
+
+                        sh '''
+                        echo "$DOCKER_PWD" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${DOCKER_IMAGE}
+                        '''
                     }
-                    sh 'docker push tofazzal/user-service'
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    // Use kubeconfig stored in Jenkins credentials
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+
+                        sh '''
+                        export KUBECONFIG=$KUBECONFIG
+
+                        # Apply deployment
+                        kubectl apply -f deployment.yml
+
+                        # Ensure latest image is pulled (important for :latest tag)
+                        kubectl rollout restart deployment user-service
+
+                        # Verify rollout
+                        kubectl rollout status deployment user-service
+                        '''
+                    }
                 }
             }
         }
