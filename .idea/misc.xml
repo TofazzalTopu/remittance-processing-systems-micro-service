@@ -22,6 +22,7 @@
         <option value="$PROJECT_DIR$/api-gateway-service/pom.xml" />
         <option value="$PROJECT_DIR$/spring-boot-keycloak/pom.xml" />
         <option value="$PROJECT_DIR$/spring-boot-sharding-replication/pom.xml" />
+        <option value="$PROJECT_DIR$/cloud-config-server/pom.xml" />
       </list>
     </option>
   </component>

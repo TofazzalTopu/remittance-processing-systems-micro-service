@@ -61,7 +61,7 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, EmailData> emailKafkaListenerFactory(
+    public ConcurrentKafkaListenerContainerFactory<String, EmailData> KafkaListenerEmailDataContainerFactory(
             KafkaTemplate<String, EmailData> template) {
 
         ConcurrentKafkaListenerContainerFactory<String, EmailData> factory =

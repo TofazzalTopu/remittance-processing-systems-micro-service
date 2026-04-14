@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="cloud-config-server" />
         <module name="authentication-server" />
         <module name="eureka" />
         <module name="accounts-service" />
@@ -48,6 +49,7 @@
       <module name="auth-server" options="-parameters" />
       <module name="authentication-server" options="-parameters" />
       <module name="bank-service" options="-parameters" />
+      <module name="cloud-config-server" options="-parameters" />
       <module name="common-dto" options="-parameters" />
       <module name="department" options="-parameters" />
       <module name="department-service" options="-parameters" />
